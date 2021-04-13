@@ -1,0 +1,24 @@
+import * as Discord from "discord.js";
+import dotenv from "dotenv";
+import { getFlight } from "./live-api-if";
+dotenv.config();
+
+const client = new Discord.Client();
+
+client.on("ready", () => {
+  console.log(`Logged in as ${client.user?.tag}!`);
+});
+
+client.on("message", async (message) => {
+  const content = message.content.toLowerCase().trim();
+  if (message.content.startsWith("*ping")) {
+    message.channel.send(`Pong! **Latency: ${client.ws.ping}ms** ✈`);
+  }
+
+  if (content.startsWith("*flight")) {
+    const user = content.split(" ", 2)[1];
+    await getFlight(user, message);
+  }
+});
+
+client.login(process.env.TOKEN);
