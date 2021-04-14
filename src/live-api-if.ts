@@ -97,6 +97,13 @@ export async function getAtcFreqs(server: string, message: Discord.Message) {
     let icaoMapping: { [key: string]: AtcFreqs[] } = {};
     const frequencies = res.data.result;
     for (let freq of frequencies) {
+      if (freq.airportName == null) {
+        const aipt = frequencies.filter((a) => {
+          a.latitude === freq.latitude && a.longitude === freq.longitude;
+        })[0];
+        
+        freq.airportName = aipt.airportName;
+      }
       if (!icaoMapping[freq.airportName]) {
         icaoMapping[freq.airportName] = [];
       }
