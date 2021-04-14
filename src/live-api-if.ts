@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
-import axios from "axios";
 dotenv.config();
+import axios from "axios";
 import { ApiResponse } from "./types";
 const { API_KEY, SESSION_ID } = process.env;
 import * as Discord from "discord.js";

@@ -33,8 +33,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getFlight = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
-const axios_1 = __importDefault(require("axios"));
 dotenv_1.default.config();
+const axios_1 = __importDefault(require("axios"));
 const { API_KEY, SESSION_ID } = process.env;
 const Discord = __importStar(require("discord.js"));
 function getFlight(user, message) {
