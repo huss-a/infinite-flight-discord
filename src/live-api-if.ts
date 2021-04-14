@@ -101,7 +101,7 @@ export async function getAtcFreqs(server: string, message: Discord.Message) {
         const aipt = frequencies.filter((a) => {
           a.latitude === freq.latitude && a.longitude === freq.longitude;
         })[0];
-        
+        if (typeof aipt === "undefined") continue;
         freq.airportName = aipt.airportName;
       }
       if (!icaoMapping[freq.airportName]) {
