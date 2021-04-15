@@ -188,7 +188,7 @@ export async function getUserStats(user: string, message: Discord.Message) {
       Fields.pop();
     }
     const embed = new Discord.MessageEmbed()
-      .setTitle(`Stats for ${user}`)
+      .setTitle(`Stats for ${result[0].discourseUsername}`)
       .setColor(primaryColor)
       .addFields(Fields);
 
