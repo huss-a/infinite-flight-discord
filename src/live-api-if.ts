@@ -7,6 +7,7 @@ import {
   AtcFreqType,
   AtcFreqs,
   UserStats,
+  AtcRank,
 } from "./types";
 const { API_KEY, SESSION_ID_EXPERT } = process.env;
 import * as Discord from "discord.js";
@@ -175,7 +176,7 @@ export async function getUserStats(user: string, message: Discord.Message) {
       },
       {
         name: "ATC Rank",
-        value: result[0].atcRank,
+        value: AtcRank[result[0].atcRank],
       },
       {
         name: "Virtual Organization",
