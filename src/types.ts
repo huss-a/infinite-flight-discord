@@ -43,6 +43,41 @@ export enum AtcFreqType {
   Unused,
 }
 
+export enum AtcRank {
+  "Observer",
+  "ATC Trainee",
+  "ATC Apprentice",
+  "ATC Specialist",
+  "ATC Officer",
+  "ATC Supervisor",
+  "ATC Recruiter",
+  "ATC Manager"
+}
+
+export interface UserStats {
+  onlineFlights: number;
+  violations: number;
+  xp: number;
+  landingCount: number;
+  flightTime: number;
+  atcOperations: number;
+  atcRank: AtcRank;
+  grade: number;
+  hash: string;
+  violationCountByLevel: {
+    level1: number;
+    level2: number;
+    level3: number;
+  };
+  roles: [];
+  userId: string;
+  virtualOrganization: string;
+  discourseUsername: string;
+  groups: [];
+  errorCode: number;
+}
+
+
 export interface ApiResponse<T> {
   result: Array<T>;
 }

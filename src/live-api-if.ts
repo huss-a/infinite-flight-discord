@@ -1,7 +1,13 @@
 import dotenv from "dotenv";
 dotenv.config();
 import axios from "axios";
-import { ApiResponse, FlightInfo, AtcFreqType, AtcFreqs } from "./types";
+import {
+  ApiResponse,
+  FlightInfo,
+  AtcFreqType,
+  AtcFreqs,
+  UserStats,
+} from "./types";
 const { API_KEY, SESSION_ID_EXPERT } = process.env;
 import * as Discord from "discord.js";
 
@@ -122,6 +128,69 @@ export async function getAtcFreqs(server: string, message: Discord.Message) {
       );
     }
     //-------------------------------------------------------
+    return message.channel.send(embed);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function getUserStats(user: string, message: Discord.Message) {
+  const URL = `${BASE_URL}/user/stats?apikey=${process.env.API_KEY}`;
+  const body = {
+    discourseNames: [user],
+  };
+
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  try {
+    const res = await axios.post<ApiResponse<UserStats>>(URL, body, config);
+    const { result } = res.data;
+    const Fields: Discord.EmbedFieldData[] = [
+      {
+        name: "Online Flights",
+        value: result[0].onlineFlights,
+      },
+      {
+        name: "Violations",
+        value: result[0].violations,
+      },
+      {
+        name: "XP",
+        value: result[0].xp,
+      },
+      {
+        name: "Landing Count",
+        value: result[0].landingCount,
+      },
+      {
+        name: "Total Flight Time",
+        value: Math.floor(result[0].flightTime / 60),
+      },
+      {
+        name: "ATC Operations",
+        value: result[0].atcOperations,
+      },
+      {
+        name: "ATC Rank",
+        value: result[0].atcRank,
+      },
+      {
+        name: "Virtual Organization",
+        value: result[0].virtualOrganization,
+      },
+    ];
+
+    if (!result[0].virtualOrganization || result[0].virtualOrganization == "") {
+      Fields.pop();
+    }
+    const embed = new Discord.MessageEmbed()
+      .setTitle(`Stats for ${user}`)
+      .setColor(primaryColor)
+      .addFields(Fields);
+
     return message.channel.send(embed);
   } catch (err) {
     console.log(err);

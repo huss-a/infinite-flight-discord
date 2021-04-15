@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "node out/index.js",
+    "start": "node ./out/index.js",
     "postinstall": "tsc",
     "watch-node": "nodemon out/index.js",
     "watch-ts": "tsc -w",

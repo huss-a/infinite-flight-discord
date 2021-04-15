@@ -1,6 +1,6 @@
 import * as Discord from "discord.js";
 import dotenv from "dotenv";
-import { getAtcFreqs, getFlight } from "./live-api-if";
+import { getAtcFreqs, getFlight, getUserStats } from "./live-api-if";
 dotenv.config();
 
 const client = new Discord.Client();
@@ -22,6 +22,11 @@ client.on("message", async (message) => {
   if (content.startsWith("*atc")) {
     const server = content.split(" ", 2)[1].trim();
     await getAtcFreqs(server, message);
+  }
+
+  if (content.startsWith("*stats")) {
+    const user = content.split(" ", 2)[1].trim();
+    await getUserStats(user, message);
   }
 });
 
