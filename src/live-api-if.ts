@@ -183,7 +183,10 @@ export async function getUserStats(user: string, message: Discord.Message) {
         value: result[0].virtualOrganization,
       },
     ];
-
+    if (result.length === 0)
+      return message.channel.send(
+        "Invalid username or they don't have an active Infinite Flight Pro Subscription."
+      );
     if (!result[0].virtualOrganization || result[0].virtualOrganization == "") {
       Fields.pop();
     }
