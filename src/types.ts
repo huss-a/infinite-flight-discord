@@ -51,7 +51,8 @@ export enum AtcRank {
   "ATC Officer",
   "ATC Supervisor",
   "ATC Recruiter",
-  "ATC Manager"
+  "ATC Manager",
+  "Unknown"
 }
 
 export interface UserStats {

@@ -154,6 +154,10 @@ export async function getUserStats(user: string, message: Discord.Message) {
         "Invalid username or they don't have an active Infinite Flight Pro Subscription."
       );
     }
+
+    if (typeof result[0].atcRank === "undefined")
+      result[0].atcRank = AtcRank["Unknown"];
+
     const Fields: Discord.EmbedFieldData[] = [
       {
         name: "Online Flights",
