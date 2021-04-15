@@ -168,6 +168,10 @@ export async function getUserStats(user: string, message: Discord.Message) {
         value: result[0].violations,
       },
       {
+        name: "Grade",
+        value: result[0].grade,
+      },
+      {
         name: "XP",
         value: result[0].xp,
       },
