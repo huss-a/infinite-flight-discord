@@ -149,6 +149,11 @@ export async function getUserStats(user: string, message: Discord.Message) {
   try {
     const res = await axios.post<ApiResponse<UserStats>>(URL, body, config);
     const { result } = res.data;
+    if (result.length === 0) {
+      return message.channel.send(
+        "Invalid username or they don't have an active Infinite Flight Pro Subscription."
+      );
+    }
     const Fields: Discord.EmbedFieldData[] = [
       {
         name: "Online Flights",
@@ -183,10 +188,6 @@ export async function getUserStats(user: string, message: Discord.Message) {
         value: result[0].virtualOrganization,
       },
     ];
-    if (result.length === 0)
-      return message.channel.send(
-        "Invalid username or they don't have an active Infinite Flight Pro Subscription."
-      );
     if (!result[0].virtualOrganization || result[0].virtualOrganization == "") {
       Fields.pop();
     }

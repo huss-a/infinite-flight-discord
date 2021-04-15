@@ -7,9 +7,11 @@
     "postinstall": "tsc",
     "watch-node": "nodemon out/index.js",
     "watch-ts": "tsc -w",
-    "deploy": "git add . && git commit -m Heroku && git push heroku master"
+    "deploy": "git add . && git commit -m \"minor fix\" && git push heroku master && git push origin master"
   },
-  "engines": {"node": "14.15.4"},
+  "engines": {
+    "node": "14.15.4"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
