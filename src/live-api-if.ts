@@ -11,6 +11,7 @@ import {
 } from "./types";
 const { API_KEY, SESSION_ID_EXPERT } = process.env;
 import * as Discord from "discord.js";
+import { /*pool,*/ client } from "./db";
 
 const BASE_URL = `https://api.infiniteflight.com/public/v2`;
 const primaryColor = "#de5100";
@@ -199,12 +200,27 @@ export async function getUserStats(user: string, message: Discord.Message) {
     if (!result[0].virtualOrganization || result[0].virtualOrganization == "") {
       Fields.pop();
     }
+    for (const field of Fields) field.inline = true;
+
     const embed = new Discord.MessageEmbed()
       .setTitle(`Stats for ${result[0].discourseUsername}`)
       .setColor(primaryColor)
       .addFields(Fields);
 
     return message.channel.send(embed);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function testDB(user: string, message: Discord.Message) {
+  if (user.length > 70)
+    return message.channel.send("IFC Name should be less than 70 characters.");
+  try {
+    const query = `INSERT INTO users (user_id, ifc_name) 
+                      VALUES (${message.member?.id.toString()}, '${user}');`;
+    await client.query(query);
+    return message.channel.send(`Added \`${user}\` to the Database.`);
   } catch (err) {
     console.log(err);
   }
