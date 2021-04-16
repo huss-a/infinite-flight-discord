@@ -1,6 +1,6 @@
 import * as Discord from "discord.js";
 import dotenv from "dotenv";
-import { testDB, getAtcFreqs, getFlight, getUserStats } from "./live-api-if";
+import { getAtcFreqs, getAtis, getFlight, getUserStats } from "./live-api-if";
 dotenv.config();
 
 const client = new Discord.Client();
@@ -16,22 +16,39 @@ client.on("message", async (message) => {
   }
 
   if (content.startsWith("*flight")) {
-    const user = content.split(" ", 2)[1];
-    await getFlight(user, message);
+    try {
+      const user = content.split(" ", 2)[1];
+      if (!user) return message.channel.send("Please provide a user!");
+      await getFlight(user, message);
+    } catch (err) {
+      console.log(err);
+    }
   }
   if (content.startsWith("*atc")) {
-    const server = content.split(" ", 2)[1].trim();
-    await getAtcFreqs(server, message);
+    try {
+      const server = content.split(" ", 2)[1].trim();
+      await getAtcFreqs(server, message);
+    } catch (err) {
+      await getAtcFreqs("expert", message);
+    }
   }
 
   if (content.startsWith("*stats")) {
-    const user = content.split(" ", 2)[1].trim();
-    await getUserStats(user, message);
+    try {
+      const user = content.split(" ", 2)[1].trim();
+      await getUserStats(user, message);
+    } catch (err) {
+      return message.channel.send("Please provide a valid user!");
+    }
   }
 
-  if (content.startsWith("*set")) {
-    const user = content.split(" ", 2)[1].trim();
-    await testDB(user, message);
+  if (content.startsWith("*atis")) {
+    try {
+      const apt = content.split(" ", 2)[1].trim().toUpperCase();
+      await getAtis(apt, message);
+    } catch (err) {
+      return message.channel.send("Please provide an active airport!");
+    }
   }
 });
 

@@ -213,15 +213,33 @@ export async function getUserStats(user: string, message: Discord.Message) {
   }
 }
 
-export async function testDB(user: string, message: Discord.Message) {
-  if (user.length > 70)
-    return message.channel.send("IFC Name should be less than 70 characters.");
+export async function getAtis(apt: string, message: Discord.Message) {
   try {
-    const query = `INSERT INTO users (user_id, ifc_name) 
-                      VALUES (${message.member?.id.toString()}, '${user}');`;
-    await client.query(query);
-    return message.channel.send(`Added \`${user}\` to the Database.`);
+    const res = await axios.get(
+      `${BASE_URL}/airport/${apt.toUpperCase()}/atis/${SESSION_ID_EXPERT}?apikey=${API_KEY}`
+    );
+
+    const embed = new Discord.MessageEmbed()
+      .setTitle(`ATIS For ${apt.toUpperCase()} on the Expert Server`)
+      .setColor(primaryColor)
+      .addField(apt.toUpperCase(), res.data.result, true);
+    return message.channel.send(embed);
   } catch (err) {
-    console.log(err);
+    return message.channel.send(
+      "That airport is currently inactive or the airport ICAO is invalid."
+    );
   }
 }
+
+// export async function testDB(user: string, message: Discord.Message) {
+//   if (user.length > 70)
+//     return message.channel.send("IFC Name should be less than 70 characters.");
+//   try {
+//     const query = `INSERT INTO users (user_id, ifc_name)
+//                       VALUES (${message.member?.id.toString()}, '${user}');`;
+//     await client.query(query);
+//     return message.channel.send(`Added \`${user}\` to the Database.`);
+//   } catch (err) {
+//     console.log(err);
+//   }
+// }
