@@ -1,6 +1,6 @@
 import * as Discord from "discord.js";
 import dotenv from "dotenv";
-import { foo, getAtcFreqs, getFlight, getUserStats } from "./live-api-if";
+import { testDB, getAtcFreqs, getFlight, getUserStats } from "./live-api-if";
 dotenv.config();
 
 const client = new Discord.Client();
@@ -31,7 +31,7 @@ client.on("message", async (message) => {
 
   if (content.startsWith("*set")) {
     const user = content.split(" ", 2)[1].trim();
-    await foo(user, message);
+    await testDB(user, message);
   }
 });
 
