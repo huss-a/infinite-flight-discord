@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import axios from "axios";
 import {
-  ApiResponse,
+  ApiResponseArr,
   FlightInfo,
   AtcFreqType,
   AtcFreqs,
@@ -11,13 +11,13 @@ import {
 } from "./types";
 const { API_KEY, SESSION_ID_EXPERT } = process.env;
 import * as Discord from "discord.js";
-import { /*pool,*/ client } from "./db";
+import { client } from "./db";
 
 const BASE_URL = `https://api.infiniteflight.com/public/v2`;
 const primaryColor = "#de5100";
 export async function getFlight(user: string, message: Discord.Message) {
   try {
-    const res = await axios.get<ApiResponse<FlightInfo>>(
+    const res = await axios.get<ApiResponseArr<FlightInfo>>(
       `${BASE_URL}/flights/${SESSION_ID_EXPERT}?apikey=${API_KEY}`
     );
     const userFlight = res.data.result.filter(
@@ -98,7 +98,7 @@ export async function getAtcFreqs(server: string, message: Discord.Message) {
   if (sessionIdToUse === null) return message.channel.send("Invalid server.");
 
   try {
-    const res = await axios.get<ApiResponse<AtcFreqs>>(
+    const res = await axios.get<ApiResponseArr<AtcFreqs>>(
       `${BASE_URL}/atc/${sessionIdToUse}?apikey=${API_KEY}`
     );
     // --- code snippet from https://github.com/velocity23/if-discord-bot/blob/master/src/index.ts#L35 ---
@@ -148,7 +148,7 @@ export async function getUserStats(user: string, message: Discord.Message) {
     },
   };
   try {
-    const res = await axios.post<ApiResponse<UserStats>>(URL, body, config);
+    const res = await axios.post<ApiResponseArr<UserStats>>(URL, body, config);
     const { result } = res.data;
     if (result.length === 0) {
       return message.channel.send(
@@ -231,15 +231,81 @@ export async function getAtis(apt: string, message: Discord.Message) {
   }
 }
 
-// export async function testDB(user: string, message: Discord.Message) {
-//   if (user.length > 70)
-//     return message.channel.send("IFC Name should be less than 70 characters.");
-//   try {
-//     const query = `INSERT INTO users (user_id, ifc_name)
-//                       VALUES (${message.member?.id.toString()}, '${user}');`;
-//     await client.query(query);
-//     return message.channel.send(`Added \`${user}\` to the Database.`);
-//   } catch (err) {
-//     console.log(err);
-//   }
-// }
+export async function getStatus(
+  apt: string,
+  server: string,
+  message: Discord.Message
+) {
+  let sessionIdToUse =
+    server.toLowerCase() === "expert"
+      ? process.env.SESSION_ID_EXPERT
+      : server.toLowerCase() === "training"
+      ? process.env.SESSION_ID_TRAINING
+      : null;
+
+  if (sessionIdToUse === null) return message.channel.send("Invalid server.");
+
+  try {
+    const res = await axios.get(
+      `${BASE_URL}/airport/${apt.toUpperCase()}/status/${sessionIdToUse}?apikey=${API_KEY}`
+    );
+
+    const Fields: Discord.EmbedFieldData[] = [
+      {
+        name: "Inbound Flights",
+        value: res.data.result.inboundFlightsCount,
+      },
+      {
+        name: "Outbound Flights",
+        value: res.data.result.outboundFlightsCount,
+      },
+    ];
+    for (const f of Fields) f.inline = true;
+    const embed = new Discord.MessageEmbed()
+      .setTitle(`Status for ${res.data.result.airportIcao}`)
+      .addFields(Fields)
+      .setColor(primaryColor);
+
+    return message.channel.send(embed);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+// Get Flight plan
+// First call the `Get Flights` endpoint and retrieve the `flightId`
+// Then pass that ID to the `Get Flight Plan` endpoint
+
+export async function getFPL(user: string, message: Discord.Message) {
+  try {
+    // GET FLIGHT
+    const FlightRes = await axios.get<ApiResponseArr<FlightInfo>>(
+      `${BASE_URL}/flights/${SESSION_ID_EXPERT}?apikey=${API_KEY}`
+    );
+    const userFlight = FlightRes.data.result.filter(
+      (f) => f.username?.toLowerCase() === user.toLowerCase()
+    )[0];
+    if (!userFlight)
+      return message.channel.send(
+        "That user is not currently flying or don't have their Username set."
+      );
+
+    // GET FPL
+    const FPLRes = await axios.get(
+      `${BASE_URL}/flight/${userFlight.flightId}/flightplan?apikey=${API_KEY}`
+    );
+
+    const waypoints = FPLRes.data.result.waypoints.join(" ");
+
+    const embed = new Discord.MessageEmbed()
+      .setTitle(`FPL for ${userFlight.username}`)
+      .setDescription(waypoints)
+      .setColor(primaryColor)
+      .setFooter(
+        "This command may take sometime as it has to make 2 different API calls."
+      );
+    return message.channel.send(embed);
+  } catch (err) {
+    console.log(err.message);
+  }
+}

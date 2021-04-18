@@ -1,6 +1,13 @@
 import * as Discord from "discord.js";
 import dotenv from "dotenv";
-import { getAtcFreqs, getAtis, getFlight, getUserStats } from "./live-api-if";
+import {
+  getAtcFreqs,
+  getAtis,
+  getFlight,
+  getFPL,
+  getStatus,
+  getUserStats,
+} from "./live-api-if";
 dotenv.config();
 
 const client = new Discord.Client();
@@ -48,6 +55,27 @@ client.on("message", async (message) => {
       await getAtis(apt, message);
     } catch (err) {
       return message.channel.send("Please provide an active airport!");
+    }
+  }
+
+  if (content.startsWith("*status")) {
+    try {
+      const apt = content.split(" ", 2)[1].trim().toUpperCase();
+      const server = content.split(" ", 3)[2].trim().toUpperCase();
+      await getStatus(apt, server, message);
+    } catch (err) {
+      return message.channel.send(
+        "Please provide an airport and server! `*status <airport> <server>`"
+      );
+    }
+  }
+
+  if (content.startsWith("*fpl")) {
+    try {
+      const user = content.split(" ", 2)[1].trim().toUpperCase();
+      await getFPL(user, message);
+    } catch (err) {
+      return message.channel.send("Please provide a user! `*fpl <user>`");
     }
   }
 });

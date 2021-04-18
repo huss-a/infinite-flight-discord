@@ -77,8 +77,6 @@ export interface UserStats {
   groups: [];
   errorCode: number;
 }
-
-
-export interface ApiResponse<T> {
-  result: Array<T>;
+export interface ApiResponseArr<T> {
+  result: T[];
 }
