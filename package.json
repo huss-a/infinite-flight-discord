@@ -7,7 +7,7 @@
     "postinstall": "tsc",
     "watch-node": "nodemon out/index.js",
     "watch-ts": "tsc -w",
-    "deploy": "git add . && git commit -m \"getStatus and getFPL\" && git push heroku master && git push -u origin master"
+    "deploy": "git add . && git commit -m Heroku && git push heroku master"
   },
   "engines": {
     "node": "14.15.4"
