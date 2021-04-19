@@ -6,6 +6,7 @@ import {
   getFlight,
   getFPL,
   getStatus,
+  getTracks,
   getUserStats,
 } from "./live-api-if";
 dotenv.config();
@@ -78,6 +79,9 @@ client.on("message", async (message) => {
       return message.channel.send("Please provide a user! `*fpl <user>`");
     }
   }
-});
 
+  if (content.startsWith("*tracks")) {
+    await getTracks(message);
+  }
+});
 client.login(process.env.TOKEN);

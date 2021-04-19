@@ -8,6 +8,8 @@ import {
   AtcFreqs,
   UserStats,
   AtcRank,
+  OceanicTracks,
+  FPL,
 } from "./types";
 const { API_KEY, SESSION_ID_EXPERT } = process.env;
 import * as Discord from "discord.js";
@@ -17,7 +19,7 @@ const BASE_URL = `https://api.infiniteflight.com/public/v2`;
 const primaryColor = "#de5100";
 export async function getFlight(user: string, message: Discord.Message) {
   try {
-    const res = await axios.get<ApiResponseArr<FlightInfo>>(
+    const res = await axios.get<ApiResponseArr<FlightInfo[]>>(
       `${BASE_URL}/flights/${SESSION_ID_EXPERT}?apikey=${API_KEY}`
     );
     const userFlight = res.data.result.filter(
@@ -78,7 +80,6 @@ export async function getFlight(user: string, message: Discord.Message) {
       Fields.pop();
     const embed = new Discord.MessageEmbed()
       .setTitle(`Flight Info for ${userFlight.username}`)
-      .setDescription("Powered by Infinite Flight's Live API v2")
       .addFields(Fields)
       .setColor(primaryColor);
 
@@ -98,7 +99,7 @@ export async function getAtcFreqs(server: string, message: Discord.Message) {
   if (sessionIdToUse === null) return message.channel.send("Invalid server.");
 
   try {
-    const res = await axios.get<ApiResponseArr<AtcFreqs>>(
+    const res = await axios.get<ApiResponseArr<AtcFreqs[]>>(
       `${BASE_URL}/atc/${sessionIdToUse}?apikey=${API_KEY}`
     );
     // --- code snippet from https://github.com/velocity23/if-discord-bot/blob/master/src/index.ts#L35 ---
@@ -148,7 +149,11 @@ export async function getUserStats(user: string, message: Discord.Message) {
     },
   };
   try {
-    const res = await axios.post<ApiResponseArr<UserStats>>(URL, body, config);
+    const res = await axios.post<ApiResponseArr<UserStats[]>>(
+      URL,
+      body,
+      config
+    );
     const { result } = res.data;
     if (result.length === 0) {
       return message.channel.send(
@@ -215,7 +220,7 @@ export async function getUserStats(user: string, message: Discord.Message) {
 
 export async function getAtis(apt: string, message: Discord.Message) {
   try {
-    const res = await axios.get(
+    const res = await axios.get<ApiResponseArr<string>>(
       `${BASE_URL}/airport/${apt.toUpperCase()}/atis/${SESSION_ID_EXPERT}?apikey=${API_KEY}`
     );
 
@@ -279,7 +284,7 @@ export async function getStatus(
 export async function getFPL(user: string, message: Discord.Message) {
   try {
     // GET FLIGHT
-    const FlightRes = await axios.get<ApiResponseArr<FlightInfo>>(
+    const FlightRes = await axios.get<ApiResponseArr<FlightInfo[]>>(
       `${BASE_URL}/flights/${SESSION_ID_EXPERT}?apikey=${API_KEY}`
     );
     const userFlight = FlightRes.data.result.filter(
@@ -291,7 +296,7 @@ export async function getFPL(user: string, message: Discord.Message) {
       );
 
     // GET FPL
-    const FPLRes = await axios.get(
+    const FPLRes = await axios.get<ApiResponseArr<FPL>>(
       `${BASE_URL}/flight/${userFlight.flightId}/flightplan?apikey=${API_KEY}`
     );
 
@@ -307,5 +312,30 @@ export async function getFPL(user: string, message: Discord.Message) {
     return message.channel.send(embed);
   } catch (err) {
     console.log(err.message);
+  }
+}
+
+export async function getTracks(message: Discord.Message) {
+  try {
+    const res = await axios.get<ApiResponseArr<OceanicTracks[]>>(
+      `${BASE_URL}/tracks?apikey=${API_KEY}`
+    );
+    const embed = new Discord.MessageEmbed().setTitle("Current Oceanic Tracks");
+    const Fields: Discord.EmbedFieldData[] = [];
+    res.data.result.forEach((o) => {
+      Fields.push({
+        name: `**Name:** ${o.name}`,
+        value: `
+**Path:** ${o.path.join(" ")}
+
+**Type**: ${o.type}
+`,
+        inline: false,
+      });
+    });
+    embed.addFields(Fields).setColor(primaryColor);
+    return message.channel.send(embed);
+  } catch (err) {
+    console.log(err);
   }
 }

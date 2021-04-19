@@ -52,7 +52,7 @@ export enum AtcRank {
   "ATC Supervisor",
   "ATC Recruiter",
   "ATC Manager",
-  "Unknown"
+  "Unknown",
 }
 
 export interface UserStats {
@@ -77,6 +77,48 @@ export interface UserStats {
   groups: [];
   errorCode: number;
 }
+
+export interface OceanicTracks {
+  name: string;
+  path: string[];
+  eastLevels: number[];
+  westLevels: number[];
+  type: string;
+  lastSeen: Date;
+}
+
+export interface FPL {
+  flightPlanId: string;
+  flightId: string;
+  waypoints: string[];
+  lastUpdate: Date;
+  flightPlanItems: [
+    {
+      name: string;
+      type: number;
+      children: [
+        {
+          name: string;
+          type: number;
+          children: object[] | null;
+          identifier: string;
+          altitude: number;
+          location: {
+            latitude: number;
+            longitude: number;
+          };
+        }
+      ];
+      identifier: string;
+      altitude: 0;
+      location: {
+        latitude: 0;
+        longitude: 0;
+      };
+    }
+  ];
+}
+
 export interface ApiResponseArr<T> {
-  result: T[];
+  result: T;
 }
