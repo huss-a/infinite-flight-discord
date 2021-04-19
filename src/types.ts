@@ -1,3 +1,5 @@
+import * as Discord from "discord.js";
+
 export interface FlightInfo {
   username: string;
   callsign: string;
@@ -117,6 +119,12 @@ export interface FPL {
       };
     }
   ];
+}
+
+export interface DBResponse {
+  id: number;
+  user_id: string;
+  ifc_name: string;
 }
 
 export interface ApiResponseArr<T> {

@@ -10,6 +10,7 @@ import {
   getUserStats,
 } from "./live-api-if";
 dotenv.config();
+import { client as DBClient } from "./db";
 
 const client = new Discord.Client();
 
@@ -52,7 +53,7 @@ client.on("message", async (message) => {
 
   if (content.startsWith("*atis")) {
     try {
-      const apt = content.split(" ", 2)[1].trim().toUpperCase();
+      const apt = content.split(" ", 2)[1].trim().toLowerCase();
       await getAtis(apt, message);
     } catch (err) {
       return message.channel.send("Please provide an active airport!");
@@ -61,8 +62,8 @@ client.on("message", async (message) => {
 
   if (content.startsWith("*status")) {
     try {
-      const apt = content.split(" ", 2)[1].trim().toUpperCase();
-      const server = content.split(" ", 3)[2].trim().toUpperCase();
+      const apt = content.split(" ", 2)[1].trim().toLowerCase();
+      const server = content.split(" ", 3)[2].trim().toLowerCase();
       await getStatus(apt, server, message);
     } catch (err) {
       return message.channel.send(
@@ -73,7 +74,7 @@ client.on("message", async (message) => {
 
   if (content.startsWith("*fpl")) {
     try {
-      const user = content.split(" ", 2)[1].trim().toUpperCase();
+      const user = content.split(" ", 2)[1].trim().toLowerCase();
       await getFPL(user, message);
     } catch (err) {
       return message.channel.send("Please provide a user! `*fpl <user>`");

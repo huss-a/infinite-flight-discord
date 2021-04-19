@@ -10,6 +10,7 @@ import {
   AtcRank,
   OceanicTracks,
   FPL,
+  DBResponse,
 } from "./types";
 const { API_KEY, SESSION_ID_EXPERT } = process.env;
 import * as Discord from "discord.js";
@@ -339,3 +340,4 @@ export async function getTracks(message: Discord.Message) {
     console.log(err);
   }
 }
+
